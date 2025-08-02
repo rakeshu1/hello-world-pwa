@@ -1,3 +1,6 @@
+let deferredPrompt;
+const installButton = document.getElementById('installButton');
+
 // Check if service workers are supported
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -11,25 +14,21 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Install prompt logic
-let deferredPrompt;
-const installButton = document.getElementById('installButton');
-
-// Log when beforeinstallprompt is fired
+// Check if the browser is ready to show the install prompt
 window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('beforeinstallprompt fired');
-  e.preventDefault();  // Prevents the default mini-info bar from showing up
-  deferredPrompt = e;  // Save the event so it can be triggered later
+  console.log('beforeinstallprompt event fired');
+  e.preventDefault();  // Prevent the mini-info bar from appearing
+  deferredPrompt = e;  // Store the event for later
   installButton.style.display = 'block'; // Show the install button
 });
 
-// Trigger the install prompt when the install button is clicked
+// Handle the "Install PWA" button click
 installButton.addEventListener('click', () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();  // Show the install prompt
     deferredPrompt.userChoice
       .then((choiceResult) => {
-        console.log(choiceResult.outcome);  // Log whether the user installed the PWA
+        console.log('User response to the install prompt:', choiceResult.outcome);
         deferredPrompt = null;  // Reset the deferredPrompt variable
         installButton.style.display = 'none'; // Hide the install button after prompt
       });
